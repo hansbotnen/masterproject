@@ -1,0 +1,2323 @@
+{
+	"info": {
+		"_postman_id": "abdb405f-fe3b-49f6-ba09-943034911c5e",
+		"name": "FRNS tests - spatial",
+		"description": "Tests for the FRNS prototype",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "One subscription tests",
+			"item": [
+				{
+					"name": "Adding the subscriber",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber1\",\r\n    \"longitude\": 0.0,\r\n    \"latitude\": 0.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscription has been added to the subscriber database",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "09ddb6bd-187f-4fe3-8618-3f284063cc8b",
+								"exec": [
+									"pm.test(\"Correct subscriber has been added\", function(){",
+									"    const jsonData = pm.response.json();",
+									"    function isCorrectSubscriber(sub){",
+									"        return sub.username === 'Subscriber1' ",
+									"            && sub.primaryLocation.x===0.0 ",
+									"            && sub.primaryLocation.y===0.0;",
+									"    }",
+									"    pm.expect(jsonData.some(sub => isCorrectSubscriber(sub))).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Location has been added to the harvesting locations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5a155df5-1cbf-4adc-b839-ca6572037440",
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Location has been added\", function(){",
+									"    function isCorrectLocation(loc){",
+									"        return loc.primaryLocation.x===0.0 ",
+									"            && loc.primaryLocation.y===0.0",
+									"            && loc.stationLocation.x===0.0",
+									"            && loc.stationLocation.y===0.0",
+									"            && loc.count===1;",
+									"    }",
+									"    pm.expect(jsonData.locations.some(loc => isCorrectLocation(loc))).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/harvestinglocations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"harvestinglocations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Perform Harvest",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/tasks/harvestdata/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"tasks",
+								"harvestdata",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Weather Forecasts has been added to the weather data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "49499c69-9dfb-4deb-b4d9-eec527ca4f8c",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function harvestExists(day, obj){\r",
+									"    return obj.date===day\r",
+									"        && obj.location.x===0.0\r",
+									"        && obj.location.y===0.0;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Correct weather forecasts day 4 has been added\", function(){\r",
+									"    pm.expect(jsonData.some(forecast => harvestExists(4, forecast))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Correct weather forecasts day 5 has been added\", function(){\r",
+									"    pm.expect(jsonData.some(forecast => harvestExists(5, forecast))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Correct weather forecasts day 6 has been added\", function(){\r",
+									"    pm.expect(jsonData.some(forecast => harvestExists(6, forecast))).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/forecasts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"forecasts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Weather Measurements has been added to the Weather Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1bb26cab-cb7b-4262-bfab-3e9300f2b2c9",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function harvestExists(day, obj){\r",
+									"    return obj.date===day\r",
+									"        && obj.location.x===0.0\r",
+									"        && obj.location.y===0.0;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Correct weather measurements day 1 has been added\", function(){\r",
+									"    pm.expect(jsonData.some(measurement => harvestExists(1, measurement))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Correct weather measurementss day 2 has been added\", function(){\r",
+									"    pm.expect(jsonData.some(measurement => harvestExists(2, measurement))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Correct weather measurements day 3 has been added\", function(){\r",
+									"    pm.expect(jsonData.some(measurement => harvestExists(3, measurement))).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/measurements",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"measurements"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Compute Risk Prediction",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/tasks/createpredictions/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"tasks",
+								"createpredictions",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscriber has received prediction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f82ada5a-c466-4652-b947-23f0b6dc1eb3",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectPrediction(prediction){\r",
+									"    return prediction.day===4\r",
+									"        && prediction.primaryLocation.x===0.0\r",
+									"        && prediction.primaryLocation.y===0.0;\r",
+									"}\r",
+									"pm.test(\"Prediction has been created\", function(){\r",
+									"    pm.expect(jsonData.some(rp => isCorrectPrediction(rp.prediction))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Correct subscriber has received prediction\", function(){\r",
+									"    function isCorrectSubscriber(sub){\r",
+									"        return sub.username === 'Subscriber1' \r",
+									"            && sub.primaryLocation.x===0.0 \r",
+									"            && sub.primaryLocation.y===0.0\r",
+									"            && sub.stationLocation.x===0.0\r",
+									"            && sub.stationLocation.y==0.0;\r",
+									"    }\r",
+									"    function checkReceivedPrediction(rp){\r",
+									"        if(isCorrectPrediction(rp.prediction))\r",
+									"            return rp.subscribers.some(sub=> isCorrectSubscriber(sub));\r",
+									"        else return false;\r",
+									"    }\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp))).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/receivedpredictions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"receivedpredictions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "The subscriber unsubscribes",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber1\",\r\n    \"longitude\": 0.0,\r\n    \"latitude\": 0.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscriber is no longer subscribed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35047f00-4729-4565-90f6-6171b0dc2b8a",
+								"exec": [
+									"pm.test(\"Correct subscriber has been removed\", function(){\r",
+									"    const jsonData = pm.response.json();\r",
+									"    function isCorrectSubscriber(sub){\r",
+									"        return sub.username === 'Subscriber1' \r",
+									"            && sub.primaryLocation.x===0.0 \r",
+									"            && sub.primaryLocation.y===0.0\r",
+									"            && sub.stationLocation.x===0.0\r",
+									"            && sub.stationLocation.y==0.0;\r",
+									"    }\r",
+									"    pm.expect(jsonData.some(sub => isCorrectSubscriber(sub))).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Location has been removed to the harvesting locations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ab3161ca-e838-4265-b334-42d6036377fb",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Location has been removed\", function(){\r",
+									"    function isCorrectLocation(loc){\r",
+									"        return loc.primaryLocation.x===0.0 \r",
+									"            && loc.primaryLocation.y===0.0\r",
+									"            && loc.stationLocation.x===0.0\r",
+									"            && loc.stationLocation.y===0.0;\r",
+									"    }\r",
+									"    pm.expect(jsonData.locations.some(loc => isCorrectLocation(loc))).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/harvestinglocations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"harvestinglocations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Perform Harvest Again for a later day",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/tasks/harvestdata/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"tasks",
+								"harvestdata",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Weather forecasts have not been added",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0890ebdc-8a57-4941-b889-97ac20740aa2",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function harvestExists(day, obj){\r",
+									"    return obj.date===day\r",
+									"        && obj.location.x===0.0\r",
+									"        && obj.location.y===0.0;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Correct weather forecasts day 7 has NOT been added\", function(){\r",
+									"    pm.expect(jsonData.some(forecast => harvestExists(7, forecast))).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/forecasts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"forecasts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Weather Measurements has not been added",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a9f5eada-5d01-4071-bae0-a4405e425f56",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function harvestExists(day, obj){\r",
+									"    return obj.date===day\r",
+									"        && obj.longitude===0.0\r",
+									"        && obj.latitude===0.0;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Correct weather measurements day 4 has NOT been added\", function(){\r",
+									"    pm.expect(jsonData.some(measurement => harvestExists(4, measurement))).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/measurements",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"measurements"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Compute Risk Prediction for new day",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/tasks/createpredictions/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"tasks",
+								"createpredictions",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New prediction has not been created",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0d010aea-8c84-4149-b698-c8e73e824ebb",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"function isCorrectPrediction(prediction){\r",
+									"        return prediction.day===5\r",
+									"            && prediction.primaryLocation.x===0.0\r",
+									"            && prediction.primaryLocation.y===0.0;\r",
+									"    }\r",
+									"\r",
+									"pm.test(\"Prediction has NOT been created\", function(){\r",
+									"    pm.expect(jsonData.some(rp => isCorrectPrediction(rp.prediction))).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/receivedpredictions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"receivedpredictions"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "When one new subscription is added:\n- The subscription is added to the subscription database\n- The location is added to the harvesting locations\n\nWhen a Harvest is performed with one subscriber added:\n- Weather forecasts are gathered for the location\n- Weather measurements are gathered for the location\n\nWhen predictions are computed with one subscriber added after harvest being performed:\n- A risk prediction is added for the day\n- The subscriber is marked as having received the prediction",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8097fb36-cdf7-4a26-98e2-a8721e18e351",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "6c67884a-16c6-43b5-8690-96b8f9b3dd46",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Two subscriptions tests",
+			"item": [
+				{
+					"name": "Adding subscriber1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber1\",\r\n    \"longitude\": 10.0,\r\n    \"latitude\": 10.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Perform Harvest for day 4",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/tasks/harvestdata/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"tasks",
+								"harvestdata",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Compute Risk Prediction for day 4",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/tasks/createpredictions/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"tasks",
+								"createpredictions",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscriber has received prediction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "895a4644-2988-4755-b61a-14cced74ab99",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectPrediction(prediction){\r",
+									"    return prediction.day===4\r",
+									"        && prediction.primaryLocation.x===10.0\r",
+									"        && prediction.primaryLocation.y===10.0;\r",
+									"}\r",
+									"function isCorrectSubscriber(sub, subName){\r",
+									"    return sub.username === subName\r",
+									"        && sub.primaryLocation.x===10.0 \r",
+									"        && sub.primaryLocation.y===10.0\r",
+									"        && sub.stationLocation.x===2.0\r",
+									"        && sub.stationLocation.y===15.0;\r",
+									"}\r",
+									"function checkReceivedPrediction(rp, subName){\r",
+									"    if(isCorrectPrediction(rp.prediction))\r",
+									"        return rp.subscribers.some(sub=> isCorrectSubscriber(sub, subName));\r",
+									"    else return false;\r",
+									"}\r",
+									"pm.test(\"Prediction has been created\", function(){\r",
+									"    pm.expect(jsonData.some(rp => isCorrectPrediction(rp.prediction))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Subscriber1 has received prediction\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, 'Subscriber1'))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Subscriber2 has NOT received prediction\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, 'Subscriber2'))).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/receivedpredictions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"receivedpredictions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding subscriber2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber2\",\r\n    \"longitude\": 10.0,\r\n    \"latitude\": 10.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscriber2 has received prediction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "554a83a2-ee73-4e63-b5d5-abf63ac9d855",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectPrediction(prediction){\r",
+									"    return prediction.day===4\r",
+									"        && prediction.primaryLocation.x===10.0\r",
+									"        && prediction.primaryLocation.y===10.0;\r",
+									"}\r",
+									"function isCorrectSubscriber(sub, subName){\r",
+									"    return sub.username === subName\r",
+									"        && sub.primaryLocation.x===10.0 \r",
+									"        && sub.primaryLocation.y===10.0\r",
+									"        && sub.stationLocation.x===2.0\r",
+									"        && sub.stationLocation.y===15.0;\r",
+									"}\r",
+									"function checkReceivedPrediction(rp, subName){\r",
+									"    if(isCorrectPrediction(rp.prediction))\r",
+									"        return rp.subscribers.some(sub=> isCorrectSubscriber(sub, subName));\r",
+									"    else return false;\r",
+									"}\r",
+									"pm.test(\"Subscriber2 has received prediction\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, 'Subscriber2'))).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/receivedpredictions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"receivedpredictions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Harvesting location has count 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "59a36297-576b-4a5a-b852-c7660bda5332",
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Location has been added\", function(){",
+									"    function isCorrectLocation(loc){",
+									"        return loc.primaryLocation.x===10.0 ",
+									"            && loc.primaryLocation.y===10.0",
+									"            && loc.stationLocation.x===2.0",
+									"            && loc.stationLocation.y===15.0",
+									"            && loc.count===2;",
+									"    }",
+									"    pm.expect(jsonData.locations.some(loc => isCorrectLocation(loc))).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/harvestinglocations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"harvestinglocations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Perform Harvest for day 5",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/tasks/harvestdata/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"tasks",
+								"harvestdata",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Compute Risk Prediction for day 5",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/tasks/createpredictions/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"tasks",
+								"createpredictions",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Both subscribers have received prediction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "759cdab6-f75f-4423-ac51-9c96a6dd0482",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectPrediction(prediction){\r",
+									"    return prediction.day===5\r",
+									"        && prediction.primaryLocation.x===10.0\r",
+									"        && prediction.primaryLocation.y===10.0;\r",
+									"}\r",
+									"function isCorrectSubscriber(sub, subName){\r",
+									"    return sub.username === subName\r",
+									"        && sub.primaryLocation.x===10.0 \r",
+									"        && sub.primaryLocation.y===10.0\r",
+									"        && sub.stationLocation.x===2.0\r",
+									"        && sub.stationLocation.y===15.0;\r",
+									"}\r",
+									"function checkReceivedPrediction(rp, subName){\r",
+									"    if(isCorrectPrediction(rp.prediction))\r",
+									"        return rp.subscribers.some(sub=> isCorrectSubscriber(sub, subName));\r",
+									"    else return false;\r",
+									"}\r",
+									"pm.test(\"Subscriber1 has received prediction\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, 'Subscriber1'))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Subscriber2 has received prediction\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, 'Subscriber2'))).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/receivedpredictions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"receivedpredictions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Removing Subscriber2",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber2\",\r\n    \"longitude\": 10.0,\r\n    \"latitude\": 10.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Harvesting location has count 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "aa8e7d29-4c5c-4aee-9844-2474caf55f2a",
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Location has been added\", function(){",
+									"    function isCorrectLocation(loc){",
+									"        return loc.primaryLocation.x===10.0 ",
+									"            && loc.primaryLocation.y===10.0",
+									"            && loc.stationLocation.x===2.0",
+									"            && loc.stationLocation.y===15.0",
+									"            && loc.count===1;",
+									"    }",
+									"    pm.expect(jsonData.locations.some(loc => isCorrectLocation(loc))).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/harvestinglocations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"harvestinglocations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Perform Harvest for day 6",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/tasks/harvestdata/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"tasks",
+								"harvestdata",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Compute Risk Prediction for day 6",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/tasks/createpredictions/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"tasks",
+								"createpredictions",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscriber 1 has received prediction, Subscriber2 has not",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6ea8012c-3ea4-487a-85eb-6f7c6a18ccae",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectPrediction(prediction){\r",
+									"    return prediction.day===6\r",
+									"        && prediction.primaryLocation.x===10.0\r",
+									"        && prediction.primaryLocation.y===10.0;\r",
+									"}\r",
+									"function isCorrectSubscriber(sub, subName){\r",
+									"    return sub.username === subName\r",
+									"        && sub.primaryLocation.x===10.0 \r",
+									"        && sub.primaryLocation.y===10.0\r",
+									"        && sub.stationLocation.x===2.0\r",
+									"        && sub.stationLocation.y===15.0;\r",
+									"}\r",
+									"function checkReceivedPrediction(rp, subName){\r",
+									"    if(isCorrectPrediction(rp.prediction))\r",
+									"        return rp.subscribers.some(sub=> isCorrectSubscriber(sub, subName));\r",
+									"    else return false;\r",
+									"}\r",
+									"pm.test(\"Subscriber1 has received prediction\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, 'Subscriber1'))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Subscriber2 has NOT received prediction\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, 'Subscriber2'))).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/receivedpredictions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"receivedpredictions"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Two locations tests",
+			"item": [
+				{
+					"name": "Adding subscription to location 1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber1\",\r\n    \"longitude\": 0.0,\r\n    \"latitude\": 0.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding subscription to location 2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber1\",\r\n    \"longitude\": 10.0,\r\n    \"latitude\": 10.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscriptions have been added to the subscriber database",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "738db0e1-ae26-4970-bd00-dc08dd3e82bd",
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"function isCorrectSubscriber1(sub){",
+									"    return sub.username === 'Subscriber1' ",
+									"        && sub.primaryLocation.x===0.0 ",
+									"        && sub.primaryLocation.y===0.0;",
+									"}",
+									"function isCorrectSubscriber2(sub){",
+									"    return sub.username === 'Subscriber1' ",
+									"        && sub.primaryLocation.x===10.0 ",
+									"        && sub.primaryLocation.y===10.0;",
+									"}",
+									"",
+									"pm.test(\"Subscription 1 has been added\", function(){",
+									"    pm.expect(jsonData.some(sub => isCorrectSubscriber1(sub))).to.be.true;",
+									"});",
+									"pm.test(\"Subscription 2 has been added\", function(){",
+									"    pm.expect(jsonData.some(sub => isCorrectSubscriber2(sub))).to.be.true;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Both Harvesting locations are saved",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "eecb8c2e-24ce-4fa0-a522-57c6d168cc1b",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectLocation1(loc){\r",
+									"        return loc.primaryLocation.x===0.0 \r",
+									"            && loc.primaryLocation.y===0.0\r",
+									"            && loc.stationLocation.x===0.0\r",
+									"            && loc.stationLocation.y===0.0\r",
+									"            && loc.count===1;\r",
+									"    }\r",
+									"    function isCorrectLocation2(loc){\r",
+									"        return loc.primaryLocation.x===10.0 \r",
+									"            && loc.primaryLocation.y===10.0\r",
+									"            && loc.stationLocation.x===2.0\r",
+									"            && loc.stationLocation.y===15.0\r",
+									"            && loc.count===1;\r",
+									"    }\r",
+									"\r",
+									"pm.test(\"Location 1 has been added\", function(){\r",
+									"    pm.expect(jsonData.locations.some(loc => isCorrectLocation1(loc))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Location 2 has been added\", function(){\r",
+									"    pm.expect(jsonData.locations.some(loc => isCorrectLocation2(loc))).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/harvestinglocations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"harvestinglocations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Perform Harvest for day 4",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/tasks/harvestdata/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"tasks",
+								"harvestdata",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Weather Forecasts has been added to the weather data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e66f0216-19c9-4752-9ba0-68f65fabf219",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function harvestExists(day, x, y, obj){\r",
+									"    return obj.date===day\r",
+									"        && obj.location.x===x\r",
+									"        && obj.location.y===y;\r",
+									"}\r",
+									"\r",
+									"function checkdays(x,y){\r",
+									"    var result = true;\r",
+									"    for(var i=4;i<7;i++){\r",
+									"        if(!jsonData.some(forecast => harvestExists(i, x,y,forecast)))\r",
+									"            result=false;\r",
+									"    }\r",
+									"    return result;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Correct weather forecasts for location 1 has been added\", function(){\r",
+									"    pm.expect(checkdays(0.0,0.0)).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Correct weather forecasts for location 2 has been added\", function(){\r",
+									"    pm.expect(checkdays(10.0,10.0)).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/forecasts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"forecasts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Weather Measurements has been added to the Weather Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8857dbf4-cead-42e3-92de-4872af190618",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function harvestExists(day, x, y, obj){\r",
+									"    return obj.date===day\r",
+									"        && obj.location.x===x\r",
+									"        && obj.location.y===y;\r",
+									"}\r",
+									"\r",
+									"function checkdays(x,y){\r",
+									"    var result = true;\r",
+									"    for(var i=1;i<4;i++){\r",
+									"        if(!jsonData.some(forecast => harvestExists(i, x,y,forecast)))\r",
+									"            result=false;\r",
+									"    }\r",
+									"    return result;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Correct weather measurements for location 1 has been added\", function(){\r",
+									"    pm.expect(checkdays(0.0,0.0)).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Correct weather measurements for location 2 has been added\", function(){\r",
+									"    pm.expect(checkdays(2.0,15.0)).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/measurements",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"measurements"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Compute Risk Prediction for day 4",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/tasks/createpredictions/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"tasks",
+								"createpredictions",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscriber has received predictions for both locations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4ac9cd40-b979-4160-b12c-69c8ba658b66",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectPrediction(prediction, x,y){\r",
+									"    return prediction.day===4\r",
+									"        && prediction.primaryLocation.x===x\r",
+									"        && prediction.primaryLocation.y===y;\r",
+									"}\r",
+									"function isCorrectSubscriber(sub, subName, x,y){\r",
+									"    return sub.username === subName\r",
+									"        && sub.primaryLocation.x===x \r",
+									"        && sub.primaryLocation.y===y;\r",
+									"}\r",
+									"function checkReceivedPrediction(rp, subName,x,y){\r",
+									"    if(isCorrectPrediction(rp.prediction,x,y))\r",
+									"        return rp.subscribers.some(sub=> isCorrectSubscriber(sub, subName,x,y));\r",
+									"    else return false;\r",
+									"}\r",
+									"pm.test(\"Subscriber has received prediction for location 1\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, 'Subscriber1',0.0,0.0))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Subscriber has received prediction for location 2\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, 'Subscriber1',10.0,10.0))).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/receivedpredictions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"receivedpredictions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Perform Harvest for day 5",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/tasks/harvestdata/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"tasks",
+								"harvestdata",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "The second subscription is removed",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber1\",\r\n    \"longitude\": 10.0,\r\n    \"latitude\": 10.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "The second harvesting location is no longer stored",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "25ea6397-7952-479a-923f-1c1b177163c2",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectLocation1(loc){\r",
+									"        return loc.primaryLocation.x===0.0 \r",
+									"            && loc.primaryLocation.y===0.0\r",
+									"            && loc.stationLocation.x===0.0\r",
+									"            && loc.stationLocation.y===0.0\r",
+									"            && loc.count===1;\r",
+									"    }\r",
+									"    function isCorrectLocation2(loc){\r",
+									"        return loc.primaryLocation.x===10.0 \r",
+									"            && loc.primaryLocation.y===10.0\r",
+									"            && loc.stationLocation.x===2.0\r",
+									"            && loc.stationLocation.y===15.0\r",
+									"            && loc.count===1;\r",
+									"    }\r",
+									"\r",
+									"pm.test(\"Location 1 is still there\", function(){\r",
+									"    pm.expect(jsonData.locations.some(loc => isCorrectLocation1(loc))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Location 2 has been removed\", function(){\r",
+									"    pm.expect(jsonData.locations.some(loc => isCorrectLocation2(loc))).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/harvestinglocations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"harvestinglocations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Compute Risk Prediction for day 5",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/tasks/createpredictions/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"tasks",
+								"createpredictions",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscriber has only received the prediction for the first location",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6f1c41f6-96eb-415c-851d-108b36a6f673",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectPrediction(prediction,x,y,day){\r",
+									"    return prediction.day===day\r",
+									"        && prediction.primaryLocation.x===x\r",
+									"        && prediction.primaryLocation.y===y;\r",
+									"}\r",
+									"function isCorrectSubscriber(sub, subName, x,y){\r",
+									"    return sub.username === subName\r",
+									"        && sub.primaryLocation.x===x \r",
+									"        && sub.primaryLocation.y===y;\r",
+									"}\r",
+									"function checkReceivedPrediction(rp, subName,x,y,day){\r",
+									"    if(isCorrectPrediction(rp.prediction,x,y,day))\r",
+									"        return rp.subscribers.some(sub=> isCorrectSubscriber(sub, subName,x,y));\r",
+									"    else return false;\r",
+									"}\r",
+									"pm.test(\"Subscriber has received prediction for location 1\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, 'Subscriber1',0.0,0.0,5))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Subscriber has NOT received prediction for location 2\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, 'Subscriber1',10.0,10.0,5))).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/receivedpredictions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"receivedpredictions"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Two subscribers two locations tests",
+			"item": [
+				{
+					"name": "Adding subscription1 to location 1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber1\",\r\n    \"longitude\": 0.0,\r\n    \"latitude\": 0.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding subscription1 to location 2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber1\",\r\n    \"longitude\": 10.0,\r\n    \"latitude\": 10.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding subscription2 to location 1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber2\",\r\n    \"longitude\": 0.0,\r\n    \"latitude\": 0.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding subscription2 to location 2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber2\",\r\n    \"longitude\": 10.0,\r\n    \"latitude\": 10.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscriptions have been added to the subscriber database",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d9d0b89b-deb4-403f-bca9-1f922880ee35",
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"function isCorrectSubscriber(sub,name,x,y){",
+									"    return sub.username === name ",
+									"        && sub.primaryLocation.x===x ",
+									"        && sub.primaryLocation.y===y;",
+									"}",
+									"const sub1 = 'Subscriber1';",
+									"const sub2 = 'Subscriber2';",
+									"",
+									"pm.test(\"Subscription 1 to loc 1 has been added\", function(){",
+									"    pm.expect(jsonData.some(sub => isCorrectSubscriber(sub,sub1,0.0,0.0))).to.be.true;",
+									"});",
+									"pm.test(\"Subscription 1 to loc 2 has been added\", function(){",
+									"    pm.expect(jsonData.some(sub => isCorrectSubscriber(sub,sub1,10.0,10.0))).to.be.true;",
+									"});",
+									"pm.test(\"Subscription 2 to loc 1 has been added\", function(){",
+									"    pm.expect(jsonData.some(sub => isCorrectSubscriber(sub,sub2,0.0,0.0))).to.be.true;",
+									"});",
+									"pm.test(\"Subscription 2 to loc 2 has been added\", function(){",
+									"    pm.expect(jsonData.some(sub => isCorrectSubscriber(sub,sub2,10.0,10.0))).to.be.true;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Both Harvesting locations are saved",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "250ceb4b-7e9b-40b6-844a-a0cf3624b64b",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectLocation1(loc){\r",
+									"        return loc.primaryLocation.x===0.0 \r",
+									"            && loc.primaryLocation.y===0.0\r",
+									"            && loc.stationLocation.x===0.0\r",
+									"            && loc.stationLocation.y===0.0\r",
+									"            && loc.count===2;\r",
+									"    }\r",
+									"    function isCorrectLocation2(loc){\r",
+									"        return loc.primaryLocation.x===10.0 \r",
+									"            && loc.primaryLocation.y===10.0\r",
+									"            && loc.stationLocation.x===2.0\r",
+									"            && loc.stationLocation.y===15.0\r",
+									"            && loc.count===2;\r",
+									"    }\r",
+									"\r",
+									"pm.test(\"Location 1 has been added\", function(){\r",
+									"    pm.expect(jsonData.locations.some(loc => isCorrectLocation1(loc))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Location 2 has been added\", function(){\r",
+									"    pm.expect(jsonData.locations.some(loc => isCorrectLocation2(loc))).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/harvestinglocations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"harvestinglocations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Perform Harvest for day 4",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/tasks/harvestdata/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"tasks",
+								"harvestdata",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Compute Risk Prediction for day 4",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/tasks/createpredictions/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"tasks",
+								"createpredictions",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribers have received predictions for all locations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ebb33fef-d30b-4bff-8e2d-bf4f28a90676",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectPrediction(prediction,x,y,day){\r",
+									"    return prediction.day===day\r",
+									"        && prediction.primaryLocation.x===x\r",
+									"        && prediction.primaryLocation.y===y;\r",
+									"}\r",
+									"function isCorrectSubscriber(sub, subName, x,y){\r",
+									"    return sub.username === subName\r",
+									"        && sub.primaryLocation.x===x \r",
+									"        && sub.primaryLocation.y===y;\r",
+									"}\r",
+									"function checkReceivedPrediction(rp, subName,x,y,day){\r",
+									"    if(isCorrectPrediction(rp.prediction,x,y,day))\r",
+									"        return rp.subscribers.some(sub=> isCorrectSubscriber(sub, subName,x,y));\r",
+									"    else return false;\r",
+									"}\r",
+									"const sub1 = 'Subscriber1';\r",
+									"const sub2 = 'Subscriber2';\r",
+									"pm.test(\"Subscriber1 has received prediction for location 1\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, sub1,0.0,0.0,4))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Subscriber1 has received prediction for location 2\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, sub1,10.0,10.0,4))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Subscriber2 has received prediction for location 1\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, sub2,0.0,0.0,4))).to.be.true;\r",
+									"});\r",
+									"pm.test(\"Subscriber2 has received prediction for location 2\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, sub2,10.0,10.0,4))).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/receivedpredictions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"receivedpredictions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsubbing subscription1 from location 1",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber1\",\r\n    \"longitude\": 0.0,\r\n    \"latitude\": 0.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsubbing subscription1 from location 2",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber1\",\r\n    \"longitude\": 10.0,\r\n    \"latitude\": 10.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsubbing subscription2 from location 1",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber2\",\r\n    \"longitude\": 0.0,\r\n    \"latitude\": 0.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsubbing subscription2 from location 2",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Subscriber2\",\r\n    \"longitude\": 10.0,\r\n    \"latitude\": 10.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscriptions have been added to the subscriber database Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2406832a-acdb-49b8-9c85-08e56fe37d4a",
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"function isCorrectSubscriber(sub,name,x,y){",
+									"    return sub.username === name ",
+									"        && sub.primaryLocation.x===x ",
+									"        && sub.primaryLocation.y===y;",
+									"}",
+									"const sub1 = 'Subscriber1';",
+									"const sub2 = 'Subscriber2';",
+									"",
+									"pm.test(\"Subscription 1 to loc 1 has been added\", function(){",
+									"    pm.expect(jsonData.some(sub => isCorrectSubscriber(sub,sub1,0.0,0.0))).to.be.false;",
+									"});",
+									"pm.test(\"Subscription 1 to loc 2 has been added\", function(){",
+									"    pm.expect(jsonData.some(sub => isCorrectSubscriber(sub,sub1,10.0,10.0))).to.be.false;",
+									"});",
+									"pm.test(\"Subscription 2 to loc 1 has been added\", function(){",
+									"    pm.expect(jsonData.some(sub => isCorrectSubscriber(sub,sub2,0.0,0.0))).to.be.false;",
+									"});",
+									"pm.test(\"Subscription 2 to loc 2 has been added\", function(){",
+									"    pm.expect(jsonData.some(sub => isCorrectSubscriber(sub,sub2,10.0,10.0))).to.be.false;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Both harvesting locations have been removed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b28ebe28-45f2-4596-bb8f-20c533c407a6",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectLocation1(loc){\r",
+									"        return loc.primaryLocation.x===0.0 \r",
+									"            && loc.primaryLocation.y===0.0\r",
+									"            && loc.stationLocation.x===0.0\r",
+									"            && loc.stationLocation.y===0.0;\r",
+									"    }\r",
+									"    function isCorrectLocation2(loc){\r",
+									"        return loc.primaryLocation.x===10.0 \r",
+									"            && loc.primaryLocation.y===10.0\r",
+									"            && loc.stationLocation.x===2.0\r",
+									"            && loc.stationLocation.y===15.0;\r",
+									"    }\r",
+									"\r",
+									"pm.test(\"Location 1 has been removed\", function(){\r",
+									"    pm.expect(jsonData.locations.some(loc => isCorrectLocation1(loc))).to.be.false;\r",
+									"});\r",
+									"pm.test(\"Location 2 has been removed\", function(){\r",
+									"    pm.expect(jsonData.locations.some(loc => isCorrectLocation2(loc))).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/harvestinglocations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"harvestinglocations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Perform Harvest for day 5",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8070/tasks/harvestdata/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8070",
+							"path": [
+								"tasks",
+								"harvestdata",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Compute Risk Prediction for day 5",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/tasks/createpredictions/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"tasks",
+								"createpredictions",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "No new predictions have been added",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6e0b5fa1-d1b1-467b-9fac-dc36bd8e62e6",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"function isCorrectPrediction(prediction,x,y,day){\r",
+									"    return prediction.day===day\r",
+									"        && prediction.primaryLocation.x===x\r",
+									"        && prediction.primaryLocation.y===y;\r",
+									"}\r",
+									"function isCorrectSubscriber(sub, subName, x,y){\r",
+									"    return sub.username === subName\r",
+									"        && sub.primaryLocation.x===x \r",
+									"        && sub.primaryLocation.y===y;\r",
+									"}\r",
+									"function checkReceivedPrediction(rp, subName,x,y,day){\r",
+									"    if(isCorrectPrediction(rp.prediction,x,y,day))\r",
+									"        return rp.subscribers.some(sub=> isCorrectSubscriber(sub, subName,x,y));\r",
+									"    else return false;\r",
+									"}\r",
+									"const sub1 = 'Subscriber1';\r",
+									"const sub2 = 'Subscriber2';\r",
+									"pm.test(\"Subscriber1 has NOT received prediction for location 1\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, sub1,0.0,0.0,5))).to.be.false;\r",
+									"});\r",
+									"pm.test(\"Subscriber1 has NOT received prediction for location 2\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, sub1,10.0,10.0,5))).to.be.false;\r",
+									"});\r",
+									"pm.test(\"Subscriber2 has NOT received prediction for location 1\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, sub2,0.0,0.0,5))).to.be.false;\r",
+									"});\r",
+									"pm.test(\"Subscriber2 has NOT received prediction for location 2\", function(){\r",
+									"    pm.expect(jsonData.some(rp => checkReceivedPrediction(rp, sub2,10.0,10.0,5))).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/receivedpredictions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"receivedpredictions"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f33899ee-8ba8-4b6d-814b-b3ade397b9b5",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "382b2880-8d94-4447-8045-50d5e445f93f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
